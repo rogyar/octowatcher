@@ -7,6 +7,9 @@ import { Container } from 'react-bootstrap';
 import { Row } from 'react-bootstrap';
 import { Col } from 'react-bootstrap';
 import { ButtonGroup } from 'react-bootstrap';
+import { Spinner } from "react-bootstrap";
+import { connect } from 'react-redux';
+import { setLoading, unsetLoading } from "./action";
 
 class App extends Component {
     state = {
@@ -50,6 +53,7 @@ class App extends Component {
     }
 
     getGithubIssues(username) {
+        let showAll = true;
         let params = [
             'is:open',
             'archived:false',
@@ -57,10 +61,19 @@ class App extends Component {
         ];
 
         this.filters.forEach(filter => {
-            if (filter.selected === true) {
-                params.push(filter.query);
+            if (filter.selected !== true) {
+                showAll = false;
+                return false;
             }
         });
+
+        if (!showAll) {
+            this.filters.forEach(filter => {
+                if (filter.selected === true) {
+                    params.push(filter.query);
+                }
+            });
+        } // Else the initial `params` should be used
 
         console.log('getting issues');
         console.log(params);
@@ -94,8 +107,22 @@ class App extends Component {
     }
 
     toggleFilter(filter) {
+        let selectedFilters = 0;
+
+        if (filter.selected === true) {
+            // If only one filter selected, it must not be unselected
+            this.filters.forEach(filter => {
+                if (filter.selected === true) {
+                    selectedFilters++;
+                }
+            });
+
+            if (selectedFilters === 1) {
+                return false;
+            }
+        }
+
         filter.selected = !filter.selected;
-        console.log(filter);
         this.getGithubIssues(this.getUsername());
     }
 
@@ -122,6 +149,7 @@ class App extends Component {
                                 <button type="submit" value="Submit">Go!</button>
                             </form>
                             <Button variant="info" onClick={this.logout} style={{display: this.getUsername() !== null ? 'inline' : 'none'}}>Logout</Button>
+                            <Spinner style={{display: this.props.isLoading === true ? 'inline-block' : 'none'}} animation="border"/>
                         </header>
                     </Col>
                 </Row>
@@ -145,4 +173,15 @@ class App extends Component {
     }
 }
 
-export default App
+const mapStateToProps = state => ({
+    isLoading: state.isLoading
+});
+
+const mapDispatchToProps = dispatch => ({
+    setLoading: () => dispatch(setLoading()),
+    unsetLoading: () => dispatch(unsetLoading())
+});
+
+const AppContainer = connect(mapStateToProps, mapDispatchToProps)(App);
+
+export default AppContainer;
