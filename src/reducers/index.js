@@ -1,16 +1,16 @@
 const initialState = {
-    isLoading: true
+    isLoading: false
 };
 
 function rootReducer(state = initialState, action) {
     if (action.type === 'SET_LOADING') {
         return Object.assign({}, state, {
-            loading: true
+            isLoading: true
         });
     }
     if (action.type === 'UNSET_LOADING') {
         return Object.assign({}, state, {
-            loading: false
+            isLoading: false
         });
     }
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import StorageProcessor from './StorageProcessor'
-import { Card } from 'react-bootstrap';
+import {Card, Spinner} from 'react-bootstrap';
 import { ListGroup } from 'react-bootstrap';
 import { Button } from 'react-bootstrap';
 
@@ -8,6 +8,8 @@ class GithubCard extends Component
 {
     state = {
         updated: true,
+        isLoading: false,
+        commentsExpanded: false,
         comments: []
     };
 
@@ -19,19 +21,34 @@ class GithubCard extends Component
     constructor(props) {
         super(props);
 
-        this.loadComments = this.loadComments.bind(this);
+        this.toggleComments = this.toggleComments.bind(this);
         this.toggleIssueUpdateStatus = this.toggleIssueUpdateStatus.bind(this);
         this.storageProcessor = new StorageProcessor();
       }
 
+    toggleComments() {
+        if (this.state.commentsExpanded === false) {
+            if (this.state.comments.length === 0) {
+                this.loadComments();
+            }
+            this.setState({commentsExpanded: true});
+        } else {
+            this.setState({commentsExpanded: false});
+        }
+    }
+
     loadComments() {
-        let state = this.state;
+        // let state = this.state;
+
+        this.setState({ isLoading: true });
 
         fetch(this.props.issue.comments_url, {method: 'GET'})
         .then(response => response.json())
         .then(data => {
-            state.comments = data;
-            this.setState(state);
+            this.setState({
+                comments: data,
+                isLoading: false,
+            });
         });
     }
 
@@ -68,12 +85,16 @@ class GithubCard extends Component
                     </Card.Subtitle>
                     <ListGroup variant="flush">
                         <ListGroup.Item><b>Updated:</b> <a  onClick={this.toggleIssueUpdateStatus}>{updatedIcon}</a></ListGroup.Item>
+                        <ListGroup.Item><b>Updated at: </b>{this.props.issue.updated_at}</ListGroup.Item>
                         <ListGroup.Item><a target="_blank" href={this.props.issue.url}>{this.props.issue.url}</a></ListGroup.Item>
                         <ListGroup.Item><b>Assignees:</b> {this.props.issue.assignees.join(', ')}</ListGroup.Item>
                     </ListGroup>
                     <div>
-                        <Button variant="dark" onClick={this.loadComments}>Show comments</Button>
-                        {comments}
+                        <Button variant="dark" onClick={this.toggleComments}>Comments</Button>
+                        <Spinner style={{display: this.state.isLoading === true ? 'inline-block' : 'none'}} animation="border"/>
+                        <div style={{display: this.state.commentsExpanded === true ? 'block' : 'none'}}>
+                            {comments}
+                        </div>
                     </div>
                 </Card.Body>
             </Card>

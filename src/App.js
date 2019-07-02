@@ -60,6 +60,8 @@ class App extends Component {
             `author:${username}`
         ];
 
+        this.props.setLoading();
+
         this.filters.forEach(filter => {
             if (filter.selected !== true) {
                 showAll = false;
@@ -75,9 +77,6 @@ class App extends Component {
             });
         } // Else the initial `params` should be used
 
-        console.log('getting issues');
-        console.log(params);
-
         searchIssues(params)
             .then(issues => this.processIssues(issues));
     }
@@ -86,6 +85,7 @@ class App extends Component {
         let renderedIssues = [];
         if (issues.items.length > 0) {
             this.storageProcessor.processIssues(issues.items);
+            issues.items.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
             issues.items.forEach(issue => {
                 let assignees = issue.assignees.length > 0 ? issue.assignees.map(assignee => assignee.login) : [];
                 let issueInfo = {
@@ -97,13 +97,19 @@ class App extends Component {
                     assignees: assignees,
                     project: issue.repository_url.substring( issue.repository_url.lastIndexOf('/') + 1),
                     comments_url: issue.comments_url,
+                    updated_at: new Intl.DateTimeFormat('en-GB', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: '2-digit'
+                    }).format(new Date(issue.updated_at)),
                     updated: issue.updated
                 };
+                console.log(issue);
                 renderedIssues.push(issueInfo)
             });
-            console.log(issues.items);
             this.setState({issues: renderedIssues, username: username});
         }
+        this.props.unsetLoading();
     }
 
     toggleFilter(filter) {
@@ -132,7 +138,6 @@ class App extends Component {
     }
 
     render() {
-        console.log("render is triggered");
         const filters = this.filters.map((item, key) =>
             <Button key={key} variant={item.selected === true ? 'primary' : 'secondary'} onClick={() => this.toggleFilter(item)}>{item.title}</Button>
         );
