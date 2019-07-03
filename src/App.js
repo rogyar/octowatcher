@@ -17,10 +17,19 @@ class App extends Component {
         issues: []
     };
 
-    filters = [
-        {title: 'PRs', query: 'is:pr', selected: true},
-        {title: 'Issues', query: 'is:issue', selected: true},
-    ];
+    // filters = [
+    //     {title: 'PRs', query: 'is:pr', selected: true},
+    //     {title: 'Issues', query: 'is:issue', selected: true},
+    //     {title: 'Created', query: 'is:issue', selected: true},
+    //     {title: 'Assigned', query: 'is:issue', selected: true},
+    // ];
+
+    filters = {
+        pr : {title: 'PRs', selected: true},
+        issues: {title: 'Issues', selected: true},
+        created: {title: 'Created', selected: true},
+        assigned: {title: 'Assigned', selected: false}
+    };
 
     /**
      * @type {StorageProcessor|null}
@@ -37,7 +46,7 @@ class App extends Component {
         let storedUsername = this.storageProcessor.getUsername();
 
         if (storedUsername !== null) {
-            this.getGithubIssues(storedUsername);
+            this.getGithubIssues();
         }
     }
 
@@ -45,35 +54,50 @@ class App extends Component {
         event.preventDefault();
         let username = this.usernameInput.value;
         this.storageProcessor.setUsername(username);
-        this.getGithubIssues(username)
+        this.getGithubIssues()
+    }
+
+    /**
+     * Collects selected filters, convert to params for passing to API
+     */
+    mapFiltersToParams() {
+        let params = [
+            'is:open',
+            'archived:false'
+        ];
+
+        if (this.filters.pr.selected) {
+            if (!this.filters.issues.selected) {
+                params.push('is:pr')
+
+            }
+        }
+
+        if (this.filters.issues.selected) {
+            if (!this.filters.pr.selected) {
+                params.push('is:issue')
+            }
+        }
+
+        if (this.filters.created.selected) {
+            params.push(`author:${this.getUsername()}`);
+        }
+
+        if (this.filters.assigned.selected) {
+            params.push(`assignee:${this.getUsername()}`);
+        }
+
+        return params;
     }
 
     getUsername() {
         return this.storageProcessor.getUsername();
     }
 
-    getGithubIssues(username) {
-        let showAll = true;
-        let params = [
-            'is:open',
-            'archived:false',
-            `author:${username}`
-        ];
+    getGithubIssues() {
+        const params = this.mapFiltersToParams();
 
-        this.filters.forEach(filter => {
-            if (filter.selected !== true) {
-                showAll = false;
-                return false;
-            }
-        });
-
-        if (!showAll) {
-            this.filters.forEach(filter => {
-                if (filter.selected === true) {
-                    params.push(filter.query);
-                }
-            });
-        } // Else the initial `params` should be used
+        console.log(params);
 
         searchIssues(params, this.props.setLoading, this.props.unsetLoading)
             .then(issues => this.processIssues(issues));
@@ -105,7 +129,6 @@ class App extends Component {
                     }).format(new Date(issue.updated_at)),
                     updated: issue.updated
                 };
-                console.log(issue);
                 renderedIssues.push(issueInfo)
             });
             this.setState({issues: renderedIssues, username: username});
@@ -113,24 +136,25 @@ class App extends Component {
         this.props.unsetLoading();
     }
 
-    toggleFilter(filter) {
-        let selectedFilters = 0;
+    toggleFilter(filterType, filter) {
 
-        if (filter.selected === true) {
-            // If only one filter selected, it must not be unselected
-            this.filters.forEach(filter => {
-                if (filter.selected === true) {
-                    selectedFilters++;
-                }
-            });
-
-            if (selectedFilters === 1) {
-                return false;
+        if (filterType === 'pr') { // Allow unselect PR only when issues filter is selected
+            if (!filter.selected && this.filters.issues.selected) {
+                this.filters.pr.selected = !filter.selected
             }
+        } else if (filterType === 'issues') { // Allow unselect Issues only when PR filter is selected
+            if (!filter.selected && this.filters.pr.selected) {
+                this.filters.issues.selected = !filter.selected
+            }
+        } else if (filterType === 'created') { // Allow unselect Created only when Assignee filter is selected
+            if (!filter.selected && this.filters.assigned.selected) {
+                this.filters.created.selected = !filter.selected
+            }
+        } else if (filterType === 'assigned') { // The Assigned filter has no dependency on other filters
+            this.filters.assigned.selected = !filter.selected
         }
 
-        filter.selected = !filter.selected;
-        this.getGithubIssues(this.getUsername());
+        this.getGithubIssues();
     }
 
     logout() {
@@ -139,8 +163,8 @@ class App extends Component {
     }
 
     render() {
-        const filters = this.filters.map((item, key) =>
-            <Button key={key} variant={item.selected === true ? 'primary' : 'secondary'} onClick={() => this.toggleFilter(item)}>{item.title}</Button>
+        const filters = Object.entries(this.filters).map(([key, filter]) =>
+            <Button key={key} variant={filter.selected === true ? 'primary' : 'secondary'} onClick={() => this.toggleFilter(key, filter)}>{filter.title}</Button>
         );
         return (
             <Container>
@@ -162,7 +186,7 @@ class App extends Component {
                 <Row className="justify-content-md-center">
                     <Col xs>
                         <div style={{display: this.getUsername() === null ? 'none' : 'inline'}}>
-                            <ButtonGroup aria-label="Basic example">
+                            <ButtonGroup>
                                 {filters}
                             </ButtonGroup>
 
