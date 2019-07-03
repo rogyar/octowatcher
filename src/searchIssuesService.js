@@ -1,16 +1,17 @@
 
 const API_URL = 'https://api.github.com/search/issues'
 
-function searchIssues(params = []) {
-  let searchString = '', issues = {};
+function searchIssues(params, startLoadingAnimation, stopLoadingAnimation) {
+  let searchString = '';
 
+  startLoadingAnimation();
   searchString = getSearchQueryString(params);
-  //issues = executeSearch();
 
   return new Promise((resolve, reject) => {
     fetch(API_URL + searchString, {method: 'GET'})
     .then(response => response.json())
     .then(data => {
+      stopLoadingAnimation();
       resolve(data);
     });
   })
@@ -24,10 +25,6 @@ function getSearchQueryString(params) {
   }
 
   return searchString.slice(0, -1);
-}
-
-function executeSearch(url) {
-  
 }
 
 export default searchIssues;

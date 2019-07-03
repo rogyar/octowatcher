@@ -60,8 +60,6 @@ class App extends Component {
             `author:${username}`
         ];
 
-        this.props.setLoading();
-
         this.filters.forEach(filter => {
             if (filter.selected !== true) {
                 showAll = false;
@@ -77,12 +75,15 @@ class App extends Component {
             });
         } // Else the initial `params` should be used
 
-        searchIssues(params)
+        searchIssues(params, this.props.setLoading, this.props.unsetLoading)
             .then(issues => this.processIssues(issues));
     }
 
     processIssues(issues, username) {
         let renderedIssues = [];
+
+        this.props.setLoading();
+
         if (issues.items.length > 0) {
             this.storageProcessor.processIssues(issues.items);
             issues.items.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
