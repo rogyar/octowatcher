@@ -17,13 +17,6 @@ class App extends Component {
         issues: []
     };
 
-    // filters = [
-    //     {title: 'PRs', query: 'is:pr', selected: true},
-    //     {title: 'Issues', query: 'is:issue', selected: true},
-    //     {title: 'Created', query: 'is:issue', selected: true},
-    //     {title: 'Assigned', query: 'is:issue', selected: true},
-    // ];
-
     filters = {
         pr : {title: 'PRs', selected: true},
         issues: {title: 'Issues', selected: true},
@@ -138,20 +131,24 @@ class App extends Component {
 
     toggleFilter(filterType, filter) {
 
-        if (filterType === 'pr') { // Allow unselect PR only when issues filter is selected
-            if (!filter.selected && this.filters.issues.selected) {
-                this.filters.pr.selected = !filter.selected
+        if (filter.selected === true) { // Process unselect operation
+            if (filterType === 'pr') { // Allow unselect PR only when issues filter is selected
+                if (this.filters.pr.selected && this.filters.issues.selected) {
+                    this.filters.pr.selected = !filter.selected
+                }
+            } else if (filterType === 'issues') { // Allow unselect Issues only when PR filter is selected
+                if (this.filters.issues.selected && this.filters.pr.selected) {
+                    this.filters.issues.selected = !filter.selected
+                }
+            } else if (filterType === 'created') { // Allow unselect Created only when Assignee filter is selected
+                if (this.filters.created.selected && this.filters.assigned.selected) {
+                    this.filters.created.selected = !filter.selected
+                }
+            } else if (filterType === 'assigned') { // The Assigned filter has no dependency on other filters
+                this.filters.assigned.selected = !filter.selected
             }
-        } else if (filterType === 'issues') { // Allow unselect Issues only when PR filter is selected
-            if (!filter.selected && this.filters.pr.selected) {
-                this.filters.issues.selected = !filter.selected
-            }
-        } else if (filterType === 'created') { // Allow unselect Created only when Assignee filter is selected
-            if (!filter.selected && this.filters.assigned.selected) {
-                this.filters.created.selected = !filter.selected
-            }
-        } else if (filterType === 'assigned') { // The Assigned filter has no dependency on other filters
-            this.filters.assigned.selected = !filter.selected
+        } else { // Process select operations
+            filter.selected = !filter.selected
         }
 
         this.getGithubIssues();
