@@ -38,15 +38,17 @@ class GithubCard extends Component
     }
 
     loadComments() {
-        // let state = this.state;
+        const recentCommentsNumber = 4;
 
         this.setState({ isLoading: true });
 
         fetch(this.props.issue.comments_url, {method: 'GET'})
         .then(response => response.json())
-        .then(data => {
+        .then(comments => {
+            comments.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+            comments = comments.slice(0, recentCommentsNumber);
             this.setState({
-                comments: data,
+                comments: comments,
                 isLoading: false,
             });
         });
