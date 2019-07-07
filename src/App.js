@@ -10,6 +10,9 @@ import { Spinner } from "react-bootstrap";
 import { connect } from 'react-redux';
 import { setLoading, unsetLoading } from "./action";
 import GithubCard from "./GithubCard";
+import Navbar from "react-bootstrap/Navbar";
+import Nav from "react-bootstrap/Nav";
+import Form from "react-bootstrap/Form";
 
 class App extends Component {
     state = {
@@ -160,44 +163,37 @@ class App extends Component {
     }
 
     render() {
-        const filters = Object.entries(this.filters).map(([key, filter]) =>
+        const filterButtons = Object.entries(this.filters).map(([key, filter]) =>
             <Button key={key} variant={filter.selected === true ? 'primary' : 'secondary'} onClick={() => this.toggleFilter(key, filter)}>{filter.title}</Button>
         );
+        const navbarFilter = <Nav className="mr-auto"><ButtonGroup>{filterButtons}</ButtonGroup></Nav>;
+        const logoutButton = <Nav className="justify-content-end">
+            <Button variant="info" onClick={this.logout}>Logout</Button>
+        </Nav>;
+        const loginForm =  <Nav className="justify-content-center mr-auto">
+            <Form onSubmit={this.setUsername} className="justify-content-center">
+                <Form.Group>
+                    <Form.Label>GitHub Username:</Form.Label>
+                    <Form.Control ref={el => this.usernameInput = el} placeholder="Username"/>
+                </Form.Group>
+                <Button variant="primary" type="submit">Go</Button>
+            </Form>
+        </Nav>;
+
         const githubEntries = this.state.issues.map((item, key) =>
             <GithubCard key={key} issue={item}/>
         );
 
         return (
             <Container>
+                <Navbar>
+                    { !this.getUsername() ? loginForm : null }
+                    { this.getUsername() ? navbarFilter : null }
+                    { this.getUsername() ? logoutButton : null }
+                </Navbar>
+                <Spinner style={{display: this.props.isLoading === true ? 'inline-block' : 'none'}} animation="border"/>
                 <Row className="justify-content-md-center">
-                    <Col xs>
-                        <header>
-                            <form onSubmit={this.setUsername}
-                                  style={{display: this.getUsername() !== null ? 'none' : 'inline'}}>
-                                <label>
-                                    GitHub Username: <input type="text" ref={el => this.usernameInput = el}/>
-                                </label>
-                                <button type="submit" value="Submit">Go!</button>
-                            </form>
-                            <Button variant="info" onClick={this.logout} style={{display: this.getUsername() !== null ? 'inline' : 'none'}}>Logout</Button>
-                            <Spinner style={{display: this.props.isLoading === true ? 'inline-block' : 'none'}} animation="border"/>
-                        </header>
-                    </Col>
-                </Row>
-                <Row className="justify-content-md-center">
-                    <Col xs>
-                        <div style={{display: this.getUsername() === null ? 'none' : 'inline'}}>
-                            <ButtonGroup>
-                                {filters}
-                            </ButtonGroup>
-
-                        </div>
-                    </Col>
-                </Row>
-                <Row className="justify-content-md-center">
-                    <Col xs>
-                        {githubEntries}
-                    </Col>
+                    {githubEntries}
                 </Row>
             </Container>
         );

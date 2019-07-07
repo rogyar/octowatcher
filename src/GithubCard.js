@@ -3,6 +3,7 @@ import StorageProcessor from './StorageProcessor'
 import {Card, Spinner} from 'react-bootstrap';
 import { ListGroup } from 'react-bootstrap';
 import { Button } from 'react-bootstrap';
+import Col from "react-bootstrap/Col";
 
 class GithubCard extends Component
 {
@@ -78,28 +79,30 @@ class GithubCard extends Component
         );
 
         return (
-            <Card style={{width: '30rem'}}>
-                <Card.Body>
-                    <Card.Title>{this.props.issue.title}</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">
-                        <p>Project: {this.props.issue.project}</p>
-                        <p>Author: {this.props.issue.author_name}</p>
-                    </Card.Subtitle>
-                    <ListGroup variant="flush">
-                        <ListGroup.Item><b>Updated:</b> <a  onClick={this.toggleIssueUpdateStatus}>{updatedIcon}</a></ListGroup.Item>
-                        <ListGroup.Item><b>Updated at: </b>{this.props.issue.updated_at}</ListGroup.Item>
-                        <ListGroup.Item><a target="_blank" href={this.props.issue.url}>{this.props.issue.url}</a></ListGroup.Item>
-                        <ListGroup.Item><b>Assignees:</b> {this.props.issue.assignees.join(', ')}</ListGroup.Item>
-                    </ListGroup>
-                    <div>
-                        <Button variant="dark" onClick={this.toggleComments}>Comments</Button>
-                        <Spinner style={{display: this.state.isLoading === true ? 'inline-block' : 'none'}} animation="border"/>
-                        <div style={{display: this.state.commentsExpanded === true ? 'block' : 'none'}}>
-                            {comments}
+            <Col>
+                <Card>
+                    <Card.Body>
+                        <Card.Title>{this.props.issue.title}</Card.Title>
+                        <Card.Subtitle className="mb-2 text-muted">
+                            <p>Project: {this.props.issue.project}</p>
+                            <p>Author: {this.props.issue.author_name}</p>
+                        </Card.Subtitle>
+                        <ListGroup variant="flush">
+                            <ListGroup.Item><b>Updated:</b> <a  onClick={this.toggleIssueUpdateStatus}>{updatedIcon}</a></ListGroup.Item>
+                            <ListGroup.Item><b>Updated at: </b>{this.props.issue.updated_at}</ListGroup.Item>
+                            <ListGroup.Item><a target="_blank" href={this.props.issue.url}>{this.props.issue.url}</a></ListGroup.Item>
+                            <ListGroup.Item><b>Assignees:</b> {this.props.issue.assignees.join(', ')}</ListGroup.Item>
+                        </ListGroup>
+                        <div>
+                            <Button variant="dark" onClick={this.toggleComments}>Comments</Button>
+                            <Spinner style={{display: this.state.isLoading === true ? 'inline-block' : 'none'}} animation="border"/>
+                            <div style={{display: this.state.commentsExpanded === true ? 'block' : 'none'}}>
+                                {comments}
+                            </div>
                         </div>
-                    </div>
-                </Card.Body>
-            </Card>
+                    </Card.Body>
+                </Card>
+            </Col>
         )
     }
 }
