@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import GithubCards from "./GithubCards"
 import searchIssues from './searchIssuesService';
 import StorageProcessor from './StorageProcessor';
 import { Button } from 'react-bootstrap';
@@ -10,6 +9,7 @@ import { ButtonGroup } from 'react-bootstrap';
 import { Spinner } from "react-bootstrap";
 import { connect } from 'react-redux';
 import { setLoading, unsetLoading } from "./action";
+import GithubCard from "./GithubCard";
 
 class App extends Component {
     state = {
@@ -163,6 +163,10 @@ class App extends Component {
         const filters = Object.entries(this.filters).map(([key, filter]) =>
             <Button key={key} variant={filter.selected === true ? 'primary' : 'secondary'} onClick={() => this.toggleFilter(key, filter)}>{filter.title}</Button>
         );
+        const githubEntries = this.state.issues.map((item, key) =>
+            <GithubCard key={key} issue={item}/>
+        );
+
         return (
             <Container>
                 <Row className="justify-content-md-center">
@@ -192,7 +196,7 @@ class App extends Component {
                 </Row>
                 <Row className="justify-content-md-center">
                     <Col xs>
-                        <GithubCards issues={this.state.issues}/>
+                        {githubEntries}
                     </Col>
                 </Row>
             </Container>
