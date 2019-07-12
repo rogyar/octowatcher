@@ -73,7 +73,14 @@ class GithubCard extends Component
 
         const comments = this.state.comments.map((item, key) =>
             <ul key={key}>
-                <li><b>Author:</b> {item.user.login}</li>
+                <li><b>Author: </b>{item.user.login}</li>
+                <li><b>Date: </b>
+                    {new Intl.DateTimeFormat('en-GB', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: '2-digit'
+                    }).format(new Date(item.updated_at))}
+                </li>
                 <li>{item.body}</li>
             </ul>
         );
