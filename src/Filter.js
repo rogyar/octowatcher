@@ -24,6 +24,9 @@ class Filter extends Component {
      * Collects selected filters, convert to params for passing to API
      */
     mapFiltersToParams() {
+        /* The problem is Github does not support OR conditions for the time being
+           that's why we need such workarounds.
+         */
         let params = [
             'is:open',
             'archived:false'
@@ -32,7 +35,6 @@ class Filter extends Component {
         if (this.filters.pr.selected) {
             if (!this.filters.issues.selected) {
                 params.push('is:pr')
-
             }
         }
 
@@ -42,12 +44,12 @@ class Filter extends Component {
             }
         }
 
-        if (this.filters.created.selected) {
-            params.push(`author:${this.props.username}`);
-        }
-
         if (this.filters.assigned.selected) {
             params.push(`assignee:${this.props.username}`);
+        }
+
+        if (this.filters.created.selected && !this.filters.assigned.selected) {
+            params.push(`author:${this.props.username}`);
         }
 
         return params;

@@ -19,7 +19,7 @@ class App extends Component {
         issues: []
     };
 
-    defaultQueryParams = ['is:open'];
+    defaultQueryParams = ['is:open', 'archived:false'];
 
     /**
      * @type {StorageProcessor|null}
@@ -55,6 +55,7 @@ class App extends Component {
 
     getGithubIssues(params) {
         this.props.setLoading();
+        console.log(params);
         fetchIssues(params)
             .then(issues => {
                 this.props.unsetLoading();
