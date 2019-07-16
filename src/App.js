@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
 import searchIssues from './searchIssuesService';
-import StorageProcessor from './StorageProcessor';
+import StorageProcessor from './Storage/StorageProcessor';
 import { Button } from 'react-bootstrap';
 import { Container } from 'react-bootstrap';
 import { Row } from 'react-bootstrap';
-import { Col } from 'react-bootstrap';
 import { ButtonGroup } from 'react-bootstrap';
 import { Spinner } from "react-bootstrap";
 import { connect } from 'react-redux';
