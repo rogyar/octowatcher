@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import searchIssues from './searchIssuesService';
+import { fetchIssues } from './Issue/fetchIssues';
 import StorageProcessor from './Storage/StorageProcessor';
 import { Button } from 'react-bootstrap';
 import { Container } from 'react-bootstrap';
@@ -91,9 +91,12 @@ class App extends Component {
 
     getGithubIssues() {
         const params = this.mapFiltersToParams();
-
-        searchIssues(params, this.props.setLoading, this.props.unsetLoading)
-            .then(issues => this.processIssues(issues));
+        this.props.setLoading();
+        fetchIssues(params)
+            .then(issues => {
+                this.props.unsetLoading();
+                this.processIssues(issues);
+            });
     }
 
     processIssues(issues, username) {
