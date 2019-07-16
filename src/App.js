@@ -4,7 +4,6 @@ import StorageProcessor from './Storage/StorageProcessor';
 import { Button } from 'react-bootstrap';
 import { Container } from 'react-bootstrap';
 import { Row } from 'react-bootstrap';
-import { ButtonGroup } from 'react-bootstrap';
 import { Spinner } from "react-bootstrap";
 import { connect } from 'react-redux';
 import { setLoading, unsetLoading } from "./action";
@@ -12,10 +11,12 @@ import GithubCard from "./GithubCard";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import Form from "react-bootstrap/Form";
+import Filter from './Filter';
 
 class App extends Component {
     state = {
         username: null,
+        queryParams: [],
         issues: []
     };
 
@@ -36,12 +37,12 @@ class App extends Component {
 
         this.setUsername = this.setUsername.bind(this);
         this.logout = this.logout.bind(this);
-        this.toggleFilter = this.toggleFilter.bind(this);
+        this.getGithubIssues = this.getGithubIssues.bind(this);
         this.storageProcessor = new StorageProcessor();
         let storedUsername = this.storageProcessor.getUsername();
 
         if (storedUsername !== null) {
-            this.getGithubIssues();
+            this.getGithubIssues([`author:${storedUsername}`]);
         }
     }
 
@@ -49,48 +50,16 @@ class App extends Component {
         event.preventDefault();
         let username = this.usernameInput.value;
         this.storageProcessor.setUsername(username);
-        this.getGithubIssues()
-    }
 
-    /**
-     * Collects selected filters, convert to params for passing to API
-     */
-    mapFiltersToParams() {
-        let params = [
-            'is:open',
-            'archived:false'
-        ];
-
-        if (this.filters.pr.selected) {
-            if (!this.filters.issues.selected) {
-                params.push('is:pr')
-
-            }
-        }
-
-        if (this.filters.issues.selected) {
-            if (!this.filters.pr.selected) {
-                params.push('is:issue')
-            }
-        }
-
-        if (this.filters.created.selected) {
-            params.push(`author:${this.getUsername()}`);
-        }
-
-        if (this.filters.assigned.selected) {
-            params.push(`assignee:${this.getUsername()}`);
-        }
-
-        return params;
+        // FIXME: should not be called within scope of current function
+        this.getGithubIssues([`author:${username}`]);
     }
 
     getUsername() {
         return this.storageProcessor.getUsername();
     }
 
-    getGithubIssues() {
-        const params = this.mapFiltersToParams();
+    getGithubIssues(params) {
         this.props.setLoading();
         fetchIssues(params)
             .then(issues => {
@@ -134,41 +103,12 @@ class App extends Component {
         this.props.unsetLoading();
     }
 
-    toggleFilter(filterType, filter) {
-
-        if (filter.selected === true) { // Process unselect operation
-            if (filterType === 'pr') { // Allow unselect PR only when issues filter is selected
-                if (this.filters.pr.selected && this.filters.issues.selected) {
-                    this.filters.pr.selected = !filter.selected
-                }
-            } else if (filterType === 'issues') { // Allow unselect Issues only when PR filter is selected
-                if (this.filters.issues.selected && this.filters.pr.selected) {
-                    this.filters.issues.selected = !filter.selected
-                }
-            } else if (filterType === 'created') { // Allow unselect Created only when Assignee filter is selected
-                if (this.filters.created.selected && this.filters.assigned.selected) {
-                    this.filters.created.selected = !filter.selected
-                }
-            } else if (filterType === 'assigned') { // The Assigned filter has no dependency on other filters
-                this.filters.assigned.selected = !filter.selected
-            }
-        } else { // Process select operations
-            filter.selected = !filter.selected
-        }
-
-        this.getGithubIssues();
-    }
-
     logout() {
         this.storageProcessor.deleteUsername(this.state.username);
         this.setState({username: null, issues: []});
     }
 
     render() {
-        const filterButtons = Object.entries(this.filters).map(([key, filter]) =>
-            <Button key={key} variant={filter.selected === true ? 'primary' : 'secondary'} onClick={() => this.toggleFilter(key, filter)}>{filter.title}</Button>
-        );
-        const navbarFilter = <Nav className="mr-auto"><ButtonGroup>{filterButtons}</ButtonGroup></Nav>;
         const logoutButton = <Nav className="justify-content-end">
             <Button variant="info" onClick={this.logout}>Logout</Button>
         </Nav>;
@@ -190,7 +130,7 @@ class App extends Component {
             <Container>
                 <Navbar>
                     { !this.getUsername() ? loginForm : null }
-                    { this.getUsername() ? navbarFilter : null }
+                    { this.getUsername() ? <Filter updateParent={this.getGithubIssues} username={this.getUsername()}/> : null }
                     { this.getUsername() ? logoutButton : null }
                 </Navbar>
                 <Spinner style={{display: this.props.isLoading === true ? 'inline-block' : 'none'}} animation="border"/>
