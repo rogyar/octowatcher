@@ -93,8 +93,6 @@ class App extends Component {
     getGithubIssues() {
         const params = this.mapFiltersToParams();
 
-        console.log(params);
-
         searchIssues(params, this.props.setLoading, this.props.unsetLoading)
             .then(issues => this.processIssues(issues));
     }
@@ -104,10 +102,11 @@ class App extends Component {
 
         this.props.setLoading();
 
-        if (issues.items.length > 0) {
-            this.storageProcessor.processIssues(issues.items);
-            issues.items.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
-            issues.items.forEach(issue => {
+        if (issues.length > 0) {
+            this.storageProcessor.processIssues(issues);
+            issues.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+            console.log(issues);
+            issues.forEach(issue => {
                 let assignees = issue.assignees.length > 0 ? issue.assignees.map(assignee => assignee.login) : [];
                 let issueInfo = {
                     id: issue.id,
@@ -118,6 +117,7 @@ class App extends Component {
                     assignees: assignees,
                     project: issue.repository_url.substring( issue.repository_url.lastIndexOf('/') + 1),
                     comments_url: issue.comments_url,
+                    events_url: issue.events_url,
                     updated_at: new Intl.DateTimeFormat('en-GB', {
                         year: 'numeric',
                         month: 'long',

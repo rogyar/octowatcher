@@ -1,5 +1,5 @@
 
-const API_URL = 'https://api.github.com/search/issues'
+const API_URL = 'https://api.github.com/search/issues';
 
 function searchIssues(params, startLoadingAnimation, stopLoadingAnimation) {
   let searchString = '';
@@ -12,7 +12,7 @@ function searchIssues(params, startLoadingAnimation, stopLoadingAnimation) {
     .then(response => response.json())
     .then(data => {
       stopLoadingAnimation();
-      resolve(data);
+      resolve(data.items);
     });
   })
 }

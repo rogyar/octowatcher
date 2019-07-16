@@ -4,14 +4,18 @@ import {Card, Spinner} from 'react-bootstrap';
 import { ListGroup } from 'react-bootstrap';
 import { Button } from 'react-bootstrap';
 import Col from "react-bootstrap/Col";
+import { getIssueTimeline } from "./Issue/getIssueTimeline"
 
+/**
+ * Represents Github issue card
+ */
 class GithubCard extends Component
 {
     state = {
         updated: true,
         isLoading: false,
-        commentsExpanded: false,
-        comments: []
+        timelineExpanded: false,
+        timelineRecords: [],
     };
 
     /**
@@ -22,66 +26,68 @@ class GithubCard extends Component
     constructor(props) {
         super(props);
 
-        this.toggleComments = this.toggleComments.bind(this);
+        this.toggleTimeline = this.toggleTimeline.bind(this);
         this.toggleIssueUpdateStatus = this.toggleIssueUpdateStatus.bind(this);
         this.storageProcessor = new StorageProcessor();
-      }
+    }
 
-    toggleComments() {
-        if (this.state.commentsExpanded === false) {
-            if (this.state.comments.length === 0) {
-                this.loadComments();
+    /**
+     * Opens/closes the issue timeline.
+     * If the timeline has not been previously loaded,
+     * fetches the records from remote system
+     */
+    toggleTimeline() {
+        let self = this;
+        if (this.state.timelineExpanded === false) {
+            if (this.state.timelineRecords.length === 0) { // Timeline records were not loaded previously
+                this.setState({ isLoading: true });
+                getIssueTimeline(this.props.issue).then((timelineRecords) => {
+                    self.setState({ timelineRecords: timelineRecords, isLoading: false });
+                    self.setState({ timelineExpanded: true });
+                });
             }
-            this.setState({commentsExpanded: true});
         } else {
-            this.setState({commentsExpanded: false});
+            this.setState({timelineExpanded: false});
         }
     }
 
-    loadComments() {
-        const recentCommentsNumber = 4;
-
-        this.setState({ isLoading: true });
-
-        fetch(this.props.issue.comments_url, {method: 'GET'})
-        .then(response => response.json())
-        .then(comments => {
-            comments.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-            comments = comments.slice(0, recentCommentsNumber);
-            this.setState({
-                comments: comments,
-                isLoading: false,
-            });
-        });
-    }
-
+    /**
+     * Assigns "updated" status for the issue according to the
+     * saved value in the issue
+     *
+     * @param {boolean} isIssueUpdated
+     */
     assignUpdatedStatus(isIssueUpdated) {
         if (isIssueUpdated !== this.state.updated) {
             this.setState({updated: isIssueUpdated})
         }
     }
 
+    /**
+     * Toggles "updated" status of the issue
+     */
     toggleIssueUpdateStatus() {
         this.setState({updated: this.storageProcessor.toggleIssueStatus(this.props.issue)});
     }
 
     render() {
+        let updatedIcon = this.state.updated === true ? '✅' : '☑️';
+
         this.assignUpdatedStatus(this.props.issue.updated);
-
-        let updatedIcon;
-        updatedIcon = this.state.updated === true ? '✅' : '☑️';
-
-        const comments = this.state.comments.map((item, key) =>
+        const timelineRecords = this.state.timelineRecords.map((item, key) =>
             <ul key={key}>
-                <li><b>Author: </b>{item.user.login}</li>
+                <li><b>Author: </b>{item.user ? item.user.login : item.actor.login }</li>
                 <li><b>Date: </b>
                     {new Intl.DateTimeFormat('en-GB', {
                         year: 'numeric',
                         month: 'long',
                         day: '2-digit'
-                    }).format(new Date(item.updated_at))}
+                    }).format(new Date(item.created_at))}
                 </li>
-                <li>{item.body}</li>
+                <li><b>Type: </b>{item.type}</li>
+                { item.body ? <li>{item.body}</li> : null }
+                { item.event ? <li><b>Event: </b>{item.event}</li> : null }
+                { item.label ? <li><b>Label: </b>{item.label.name}</li> : null }
             </ul>
         );
 
@@ -101,10 +107,10 @@ class GithubCard extends Component
                             <ListGroup.Item><b>Assignees:</b> {this.props.issue.assignees.join(', ')}</ListGroup.Item>
                         </ListGroup>
                         <div>
-                            <Button variant="dark" onClick={this.toggleComments}>Comments</Button>
+                            <Button variant="dark" onClick={this.toggleTimeline}>Toggle timeline</Button>
                             <Spinner style={{display: this.state.isLoading === true ? 'inline-block' : 'none'}} animation="border"/>
-                            <div style={{display: this.state.commentsExpanded === true ? 'block' : 'none'}}>
-                                {comments}
+                            <div style={{display: this.state.timelineExpanded === true ? 'block' : 'none'}}>
+                                {timelineRecords}
                             </div>
                         </div>
                     </Card.Body>
