@@ -16,16 +16,10 @@ import Filter from './Filter';
 class App extends Component {
     state = {
         username: null,
-        queryParams: [],
         issues: []
     };
 
-    filters = {
-        pr : {title: 'PRs', selected: true},
-        issues: {title: 'Issues', selected: true},
-        created: {title: 'Created', selected: true},
-        assigned: {title: 'Assigned', selected: false}
-    };
+    defaultQueryParams = ['is:open'];
 
     /**
      * @type {StorageProcessor|null}
@@ -42,7 +36,7 @@ class App extends Component {
         let storedUsername = this.storageProcessor.getUsername();
 
         if (storedUsername !== null) {
-            this.getGithubIssues([`author:${storedUsername}`]);
+            this.getGithubIssues(Array.prototype.concat(this.defaultQueryParams, [`author:${storedUsername}`]));
         }
     }
 
@@ -52,7 +46,7 @@ class App extends Component {
         this.storageProcessor.setUsername(username);
 
         // FIXME: should not be called within scope of current function
-        this.getGithubIssues([`author:${username}`]);
+        this.getGithubIssues(Array.prototype.concat(this.defaultQueryParams, [`author:${username}`]));
     }
 
     getUsername() {
@@ -76,7 +70,6 @@ class App extends Component {
         if (issues.length > 0) {
             this.storageProcessor.processIssues(issues);
             issues.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
-            console.log(issues);
             issues.forEach(issue => {
                 let assignees = issue.assignees.length > 0 ? issue.assignees.map(assignee => assignee.login) : [];
                 let issueInfo = {
