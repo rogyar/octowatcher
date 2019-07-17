@@ -16,7 +16,8 @@ export const fetchIssues = async (params) => {
   return fetch(API_URL + searchString, {method: 'GET'})
     .then(response => response.json())
     .then(data => {
-      return data.items;
+        data.items.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+        return data.items;
     });
 };
 

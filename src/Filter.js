@@ -62,6 +62,9 @@ class Filter extends Component {
      * @param {class} filter
      */
     toggleFilter(filterType, filter) {
+        /* The problem is Github does not support OR conditions for the time being
+           that's why we need such workarounds.
+         */
         let changed = false;
 
         if (filter.selected === true) { // Process unselect operation

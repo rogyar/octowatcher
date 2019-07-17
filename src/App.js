@@ -55,7 +55,6 @@ class App extends Component {
 
     getGithubIssues(params) {
         this.props.setLoading();
-        console.log(params);
         fetchIssues(params)
             .then(issues => {
                 this.props.unsetLoading();
@@ -63,36 +62,12 @@ class App extends Component {
             });
     }
 
-    processIssues(issues, username) {
-        let renderedIssues = [];
-
+    processIssues(issues) {
         this.props.setLoading();
 
         if (issues.length > 0) {
             this.storageProcessor.processIssues(issues);
-            issues.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
-            issues.forEach(issue => {
-                let assignees = issue.assignees.length > 0 ? issue.assignees.map(assignee => assignee.login) : [];
-                let issueInfo = {
-                    id: issue.id,
-                    title: issue.title,
-                    url: issue.html_url,
-                    author_name: issue.user.login,
-                    author_avatar: issue.user.avatar_url,
-                    assignees: assignees,
-                    project: issue.repository_url.substring( issue.repository_url.lastIndexOf('/') + 1),
-                    comments_url: issue.comments_url,
-                    events_url: issue.events_url,
-                    updated_at: new Intl.DateTimeFormat('en-GB', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: '2-digit'
-                    }).format(new Date(issue.updated_at)),
-                    updated: issue.updated
-                };
-                renderedIssues.push(issueInfo)
-            });
-            this.setState({issues: renderedIssues, username: username});
+            this.setState( {issues: issues });
         }
         this.props.unsetLoading();
     }

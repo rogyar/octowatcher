@@ -91,20 +91,31 @@ class GithubCard extends Component
             </ul>
         );
 
+        const assignees = this.props.issue.assignees.length > 0 ?
+            this.props.issue.assignees.map(assignee => assignee.login) : [];
+
         return (
             <Col>
                 <Card>
                     <Card.Body>
                         <Card.Title>{this.props.issue.title}</Card.Title>
                         <Card.Subtitle className="mb-2 text-muted">
-                            <p>Project: {this.props.issue.project}</p>
-                            <p>Author: {this.props.issue.author_name}</p>
+                            <p>Project: {this.props.issue.repository_url.substring(this.props.issue.repository_url.lastIndexOf('/') + 1)}</p>
+                            <p>Author: {this.props.issue.user.login}</p>
                         </Card.Subtitle>
                         <ListGroup variant="flush">
                             <ListGroup.Item><b>Updated:</b> <a  onClick={this.toggleIssueUpdateStatus}>{updatedIcon}</a></ListGroup.Item>
-                            <ListGroup.Item><b>Updated at: </b>{this.props.issue.updated_at}</ListGroup.Item>
-                            <ListGroup.Item><a target="_blank" href={this.props.issue.url}>{this.props.issue.url}</a></ListGroup.Item>
-                            <ListGroup.Item><b>Assignees:</b> {this.props.issue.assignees.join(', ')}</ListGroup.Item>
+                            <ListGroup.Item><b>Updated at: </b>
+                                {
+                                    new Intl.DateTimeFormat('en-GB', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: '2-digit'
+                                }).format(new Date(this.props.issue.updated_at))
+                                }
+                            </ListGroup.Item>
+                            <ListGroup.Item><a target="_blank" href={this.props.issue.html_url}>{this.props.issue.html_url}</a></ListGroup.Item>
+                            <ListGroup.Item><b>Assignees:</b> {assignees.join(', ')}</ListGroup.Item>
                         </ListGroup>
                         <div>
                             <Button variant="dark" onClick={this.toggleTimeline}>Toggle timeline</Button>
