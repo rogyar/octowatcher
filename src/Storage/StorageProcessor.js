@@ -20,6 +20,8 @@ class StorageProcessor {
             if (storedIssueData !== null) {
                 const storedIssue = JSON.parse(storedIssueData);
                 if (storedIssue.updated_at === issue.updated_at) {
+                    console.log('Stored value is different, change updated flag (issue ' + issue.id + ')');
+                    console.log(`Previous value ${storedIssue.updated_at}, current value ${issue.updated_at}`);
                     issue.updated = storedIssue.updated;
                     return; // Continue
                 }
