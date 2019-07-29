@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import { fetchIssues } from './Issue/fetchIssues';
 import StorageProcessor from './Storage/StorageProcessor';
-import { Button } from 'react-bootstrap';
 import { Container } from 'react-bootstrap';
 import { Row } from 'react-bootstrap';
 import { Spinner } from "react-bootstrap";
@@ -9,9 +8,9 @@ import { connect } from 'react-redux';
 import { setLoading, unsetLoading } from "./action";
 import GithubCard from "./GithubCard";
 import Navbar from "react-bootstrap/Navbar";
-import Nav from "react-bootstrap/Nav";
 import Filter from './Filter';
 import LoginForm from './LoginForm';
+import LogoutButton from './LogoutButton';
 
 class App extends Component {
     state = {
@@ -41,7 +40,7 @@ class App extends Component {
     }
 
     setUsername(username) {
-        console.log("setting username");
+        this.setState({ username: username});
         this.storageProcessor.setUsername(username);
 
         // FIXME: should not be called within scope of current function
@@ -49,9 +48,6 @@ class App extends Component {
     }
 
     getUsername() {
-        if (!this.storageProcessor.getUsername()) {
-            console.log("no username");
-        }
         return this.storageProcessor.getUsername();
     }
 
@@ -80,10 +76,6 @@ class App extends Component {
     }
 
     render() {
-        const logoutButton = <Nav className="justify-content-end">
-            <Button variant="info" onClick={this.logout}>Logout</Button>
-        </Nav>;
-
         const githubEntries = this.state.issues.map((item, key) =>
             <GithubCard key={key} issue={item}/>
         );
@@ -93,7 +85,7 @@ class App extends Component {
                 <Navbar>
                     { !this.getUsername() ? <LoginForm setUsername={this.setUsername}/> : null }
                     { this.getUsername() ? <Filter updateParent={this.getGithubIssues} username={this.getUsername()}/> : null }
-                    { this.getUsername() ? logoutButton : null }
+                    { this.getUsername() ? <LogoutButton logout={this.logout}/> : null }
                 </Navbar>
                 <Spinner style={{display: this.props.isLoading === true ? 'inline-block' : 'none'}} animation="border"/>
                 <Row className="justify-content-md-center">
