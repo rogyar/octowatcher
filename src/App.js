@@ -10,8 +10,8 @@ import { setLoading, unsetLoading } from "./action";
 import GithubCard from "./GithubCard";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
-import Form from "react-bootstrap/Form";
 import Filter from './Filter';
+import LoginForm from './LoginForm';
 
 class App extends Component {
     state = {
@@ -40,9 +40,8 @@ class App extends Component {
         }
     }
 
-    setUsername(event) {
-        event.preventDefault();
-        let username = this.usernameInput.value;
+    setUsername(username) {
+        console.log("setting username");
         this.storageProcessor.setUsername(username);
 
         // FIXME: should not be called within scope of current function
@@ -50,6 +49,9 @@ class App extends Component {
     }
 
     getUsername() {
+        if (!this.storageProcessor.getUsername()) {
+            console.log("no username");
+        }
         return this.storageProcessor.getUsername();
     }
 
@@ -81,15 +83,6 @@ class App extends Component {
         const logoutButton = <Nav className="justify-content-end">
             <Button variant="info" onClick={this.logout}>Logout</Button>
         </Nav>;
-        const loginForm =  <Nav className="justify-content-center mr-auto">
-            <Form onSubmit={this.setUsername} className="justify-content-center">
-                <Form.Group>
-                    <Form.Label>GitHub Username:</Form.Label>
-                    <Form.Control ref={el => this.usernameInput = el} placeholder="Username"/>
-                </Form.Group>
-                <Button variant="primary" type="submit">Go</Button>
-            </Form>
-        </Nav>;
 
         const githubEntries = this.state.issues.map((item, key) =>
             <GithubCard key={key} issue={item}/>
@@ -98,7 +91,7 @@ class App extends Component {
         return (
             <Container>
                 <Navbar>
-                    { !this.getUsername() ? loginForm : null }
+                    { !this.getUsername() ? <LoginForm setUsername={this.setUsername}/> : null }
                     { this.getUsername() ? <Filter updateParent={this.getGithubIssues} username={this.getUsername()}/> : null }
                     { this.getUsername() ? logoutButton : null }
                 </Navbar>
