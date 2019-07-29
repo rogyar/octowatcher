@@ -5,6 +5,7 @@
 
 import { fetchComments } from "./fetchComments";
 import { fetchEvents } from "./fetchEvents";
+import { fetchCommits } from "./fetchCommits";
 
 const recordsLimit = 4;
 
@@ -22,8 +23,9 @@ export const getIssueTimeline = async (issue) => {
 const fetchRecords = async (issue) => {
     const comments = await fetchComments(issue, recordsLimit);
     const events = await fetchEvents(issue, recordsLimit);
+    const commits = await fetchCommits(issue, recordsLimit);
 
-    return Array.prototype.concat(comments).concat(events);
+    return Array.prototype.concat(comments).concat(events).concat(commits);
 };
 
 /**
@@ -37,7 +39,7 @@ const buildTimeline = (records) => {
         records.forEach(record => {
             if (record.actor !== undefined) {
                 record.type = 'event';
-            } else {
+            } else if (record.type !== 'commit') { // TODO: implement mapping in fetchers instead of the workaround
                 record.type = 'comment';
             }
         })
