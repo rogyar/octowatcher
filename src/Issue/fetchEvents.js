@@ -10,7 +10,35 @@ export const fetchEvents = (issue, limit = 4) => {
     return fetch(issue.events_url, {method: 'GET'})
         .then(response => response.json())
         .then(events => {
-            events.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-            return events.slice(0, limit);
+            let mappedEvents = mapEventsData(events);
+            mappedEvents.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+            return mappedEvents.slice(0, limit);
         });
+};
+
+/**
+ * Converts the raw data into the formatted set of data
+ *
+ * @param {Array} events
+ * @returns {Array}
+ */
+const mapEventsData = events => {
+    let mappedEvents = [];
+
+    events.forEach(event => {
+        let mappedEvent = {
+            type: "event",
+            created_at: event.created_at,
+            author: event.actor.login,
+            event: event.event
+        };
+
+        if (event.label !== undefined) {
+            mappedEvent.label = event.label.name;
+        }
+
+        mappedEvents.push(mappedEvent);
+    });
+    console.log(mappedEvents);
+    return mappedEvents;
 };

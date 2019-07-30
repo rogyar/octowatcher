@@ -76,7 +76,7 @@ class GithubCard extends Component
         this.assignUpdatedStatus(this.props.issue.updated);
         const timelineRecords = this.state.timelineRecords.map((item, key) =>
             <ul key={key}>
-                <li><b>Author: </b>{item.user ? item.user.login : item.actor.login }</li>
+                <li><b>Author: </b>{item.author}</li>
                 <li><b>Date: </b>
                     {new Intl.DateTimeFormat('en-GB', {
                         year: 'numeric',
@@ -87,7 +87,7 @@ class GithubCard extends Component
                 <li><b>Type: </b>{item.type}</li>
                 { item.body ? <li>{item.body}</li> : null }
                 { item.event ? <li><b>Event: </b>{item.event}</li> : null }
-                { item.label ? <li><b>Label: </b>{item.label.name}</li> : null }
+                { item.label ? <li><b>Label: </b>{item.label}</li> : null }
             </ul>
         );
 

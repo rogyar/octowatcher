@@ -35,15 +35,6 @@ const fetchRecords = async (issue) => {
  * @returns {array}
  */
 const buildTimeline = (records) => {
-    if (records.length > 0) {
-        records.forEach(record => {
-            if (record.actor !== undefined) {
-                record.type = 'event';
-            } else if (record.type !== 'commit') { // TODO: implement mapping in fetchers instead of the workaround
-                record.type = 'comment';
-            }
-        })
-    }
     records.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
     return records;
