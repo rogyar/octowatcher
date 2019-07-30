@@ -31,6 +31,7 @@ const mapEventsData = events => {
             type: "event",
             created_at: event.created_at,
             author: event.actor.login,
+            avatar: event.actor.avatar_url,
             event: event.event
         };
 

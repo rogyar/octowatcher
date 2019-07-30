@@ -43,6 +43,7 @@ const mapCommitsData = commits => {
             type: "commit",
             created_at: commit.commit.author.date,
             author: commit.author.login,
+            avatar: commit.author.avatar_url,
             body: commit.commit.message
         };
         mappedCommits.push(mappedCommit);

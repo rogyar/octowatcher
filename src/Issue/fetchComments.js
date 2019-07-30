@@ -31,6 +31,7 @@ const mapCommentsData = comments => {
             type: "comment",
             created_at: comment.created_at,
             author: comment.user.login,
+            avatar: comment.user.avatar_url,
             body: comment.body
         };
         mappedComments.push(mappedComment);
