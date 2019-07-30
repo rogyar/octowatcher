@@ -16,9 +16,12 @@ export const fetchCommits = (issue, limit = 4) => {
     return fetch(commitsUrl, {method: 'GET'})
         .then(response => response.json())
         .then(commits => {
-            let mappedCommits =  mapCommitsData(commits);
-            mappedCommits.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-            return mappedCommits.slice(0, limit);
+            commits.sort(
+                (a, b) => new Date(b.commit.author.date).getTime() - new Date(a.commit.author.date).getTime()
+            );
+            commits = commits.slice(0, limit);
+
+            return mapCommitsData(commits);
         });
 };
 

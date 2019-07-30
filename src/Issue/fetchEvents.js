@@ -10,9 +10,10 @@ export const fetchEvents = (issue, limit = 4) => {
     return fetch(issue.events_url, {method: 'GET'})
         .then(response => response.json())
         .then(events => {
-            let mappedEvents = mapEventsData(events);
-            mappedEvents.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-            return mappedEvents.slice(0, limit);
+            events.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+            events = events.slice(0, limit);
+
+            return mapEventsData(events);
         });
 };
 

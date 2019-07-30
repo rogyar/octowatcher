@@ -10,10 +10,10 @@ export const fetchComments = (issue, limit = 4) => {
     return fetch(issue.comments_url, {method: 'GET'})
         .then(response => response.json())
         .then(comments => {
-            let mappedComments = mapCommentsData(comments);
-            mappedComments.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-            // TODO: map after slice
-            return mappedComments.slice(0, limit);
+            comments.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+            comments = comments.slice(0, limit);
+
+            return mapCommentsData(comments);
         });
 };
 
