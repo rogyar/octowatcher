@@ -104,7 +104,7 @@ class GithubCard extends Component
                             <p>Author: {this.props.issue.user.login}</p>
                         </Card.Subtitle>
                         <ListGroup variant="flush">
-                            <ListGroup.Item><b>Updated:</b> <a  onClick={this.toggleIssueUpdateStatus}>{updatedIcon}</a></ListGroup.Item>
+                            <ListGroup.Item><b>Updated:</b> <span style={{cursor: "pointer"}} onClick={this.toggleIssueUpdateStatus}>{updatedIcon}</span></ListGroup.Item>
                             <ListGroup.Item><b>Updated at: </b>
                                 {
                                     new Intl.DateTimeFormat('en-GB', {
