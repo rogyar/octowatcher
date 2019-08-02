@@ -1,0 +1,30 @@
+.githubCard {
+    margin-bottom: 1rem;
+}
+
+.cardAvatar,
+.timelineAvatar {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+}
+
+.cardAvatar {
+    margin-right: 0.5rem;
+}
+
+.timelineItem {
+    padding: 0.3rem 0;
+}
+
+.timelineItem {
+    list-style: none;
+}
+
+.timelineItemBody {
+    margin-top: 0.5rem;
+}
+
+.toggleTimelineButton {
+    margin-top: 1rem;
+}

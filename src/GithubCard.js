@@ -5,6 +5,8 @@ import { ListGroup } from 'react-bootstrap';
 import { Button } from 'react-bootstrap';
 import Col from "react-bootstrap/Col";
 import { getIssueTimeline } from "./Issue/getIssueTimeline"
+import Row from "react-bootstrap/Row";
+import styles from './styles/card.module.css'
 
 /**
  * Represents Github issue card
@@ -75,7 +77,7 @@ class GithubCard extends Component
 
         this.assignUpdatedStatus(this.props.issue.updated);
         const timelineRecords = this.state.timelineRecords.map((item, key) =>
-            <ul key={key}>
+            <ul className={styles.timelineItem} key={key}>
                 <li><b>{item.type}</b></li>
                 <li>
                     {new Intl.DateTimeFormat('en-GB', {
@@ -85,10 +87,10 @@ class GithubCard extends Component
                     }).format(new Date(item.created_at))}
                 </li>
                 <li>
-                    <img style={{borderRadius: "50%"}} alt={item.author} src={item.avatar} width="50" height="50"/> <i>{item.author}</i></li>
-                { item.body ? <li>{item.body}</li> : null }
+                    <img className={styles.timelineAvatar} alt={item.author} src={item.avatar}/> <i>{item.author}</i></li>
                 { item.event ? <li><b>Event: </b>{item.event}</li> : null }
                 { item.label ? <li><b>Label: </b>{item.label}</li> : null }
+                { item.body ? <li className={styles.timelineItemBody}>{item.body}</li> : null }
             </ul>
         );
 
@@ -96,38 +98,40 @@ class GithubCard extends Component
             this.props.issue.assignees.map(assignee => assignee.login) : [];
 
         return (
-            <Col>
-                <Card>
-                    <Card.Body>
-                        <Card.Title>{this.props.issue.title}</Card.Title>
-                        <Card.Subtitle className="mb-2 text-muted">
-                            <p>Project: {this.props.issue.repository_url.substring(this.props.issue.repository_url.lastIndexOf('/') + 1)}</p>
-                            <p>Author: {this.props.issue.user.login}</p>
-                        </Card.Subtitle>
-                        <ListGroup variant="flush">
-                            <ListGroup.Item><b>Updated:</b> <span style={{cursor: "pointer"}} onClick={this.toggleIssueUpdateStatus}>{updatedIcon}</span></ListGroup.Item>
-                            <ListGroup.Item><b>Updated at: </b>
-                                {
-                                    new Intl.DateTimeFormat('en-GB', {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: '2-digit'
-                                }).format(new Date(this.props.issue.updated_at))
-                                }
-                            </ListGroup.Item>
-                            <ListGroup.Item><a target="_blank" href={this.props.issue.html_url}>{this.props.issue.html_url}</a></ListGroup.Item>
-                            <ListGroup.Item><b>Assignees:</b> {assignees.join(', ')}</ListGroup.Item>
-                        </ListGroup>
-                        <div>
-                            <Button variant="dark" onClick={this.toggleTimeline}>Toggle timeline</Button>
-                            <Spinner style={{display: this.state.isLoading === true ? 'inline-block' : 'none'}} animation="border"/>
-                            <div style={{display: this.state.timelineExpanded === true ? 'block' : 'none'}}>
-                                {timelineRecords}
+            <Row>
+                <Col>
+                    <Card className={styles.githubCard}>
+                        <Card.Body>
+                            <Card.Title>{this.props.issue.title}</Card.Title>
+                            <Card.Subtitle className="mb-2 text-muted">
+                                <p>{this.props.issue.repository_url.substring(this.props.issue.repository_url.lastIndexOf('/') + 1)}</p>
+                                <p><img className={styles.cardAvatar} src={this.props.issue.user.avatar_url} alt={this.props.issue.user.login}/>{this.props.issue.user.login}</p>
+                            </Card.Subtitle>
+                            <ListGroup variant="flush">
+                                <ListGroup.Item><b>Updated:</b> <span style={{cursor: "pointer"}} onClick={this.toggleIssueUpdateStatus}>{updatedIcon}</span></ListGroup.Item>
+                                <ListGroup.Item><b>Updated at: </b>
+                                    {
+                                        new Intl.DateTimeFormat('en-GB', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: '2-digit'
+                                    }).format(new Date(this.props.issue.updated_at))
+                                    }
+                                </ListGroup.Item>
+                                <ListGroup.Item><b>Assignees:</b> {assignees.join(', ')}</ListGroup.Item>
+                                <ListGroup.Item><a target="_blank" href={this.props.issue.html_url}>{this.props.issue.html_url}</a></ListGroup.Item>
+                            </ListGroup>
+                            <div>
+                                <Button className={styles.toggleTimelineButton} variant="dark" onClick={this.toggleTimeline}>Toggle timeline</Button>
+                                <Spinner style={{display: this.state.isLoading === true ? 'inline-block' : 'none'}} animation="border"/>
+                                <div style={{display: this.state.timelineExpanded === true ? 'block' : 'none'}}>
+                                    {timelineRecords}
+                                </div>
                             </div>
-                        </div>
-                    </Card.Body>
-                </Card>
-            </Col>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
         )
     }
 }

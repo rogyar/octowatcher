@@ -88,9 +88,9 @@ class App extends Component {
                     { this.getUsername() ? <LogoutButton logout={this.logout}/> : null }
                 </Navbar>
                 <Spinner style={{display: this.props.isLoading === true ? 'inline-block' : 'none'}} animation="border"/>
-                <Row className="justify-content-md-center">
+                <Container className="justify-content-md-center">
                     {githubEntries}
-                </Row>
+                </Container>
             </Container>
         );
     }
