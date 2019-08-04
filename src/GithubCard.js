@@ -44,10 +44,10 @@ class GithubCard extends Component
             if (this.state.timelineRecords.length === 0) { // Timeline records were not loaded previously
                 this.setState({ isLoading: true });
                 getIssueTimeline(this.props.issue).then((timelineRecords) => {
-                    self.setState({ timelineRecords: timelineRecords, isLoading: false });
-                    self.setState({ timelineExpanded: true });
+                    self.setState({ timelineRecords: timelineRecords, isLoading: false});
                 });
             }
+            self.setState({ timelineExpanded: true });
         } else {
             this.setState({timelineExpanded: false});
         }
