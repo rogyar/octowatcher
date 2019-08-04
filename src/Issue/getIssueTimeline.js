@@ -6,6 +6,7 @@
 import { fetchComments } from "./fetchComments";
 import { fetchEvents } from "./fetchEvents";
 import { fetchCommits } from "./fetchCommits";
+import { fetchReviewComments } from "./fetchReviewComments";
 
 const recordsLimit = 4;
 
@@ -24,8 +25,9 @@ const fetchRecords = async (issue) => {
     const comments = await fetchComments(issue, recordsLimit);
     const events = await fetchEvents(issue, recordsLimit);
     const commits = await fetchCommits(issue, recordsLimit);
+    const reviewComments = await fetchReviewComments(issue, recordsLimit);
 
-    return Array.prototype.concat(comments).concat(events).concat(commits);
+    return Array.prototype.concat(comments).concat(events).concat(commits).concat(reviewComments);
 };
 
 /**

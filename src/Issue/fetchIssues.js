@@ -17,6 +17,7 @@ export const fetchIssues = async (params) => {
     .then(response => response.json())
     .then(data => {
         data.items.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+        console.log(data.items);
         return data.items;
     });
 };
