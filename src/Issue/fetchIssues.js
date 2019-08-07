@@ -14,10 +14,16 @@ export const fetchIssues = async (params) => {
   const searchString = getSearchQueryString(params);
 
   return fetch(API_URL + searchString, {method: 'GET'})
-    .then(response => response.json())
+        .then(response => {
+        if (response.status === 403) {
+            throw new Error("Too many requests, try again later");
+        }
+
+        return response.json()
+    })
     .then(data => {
         data.items.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
-        console.log(data.items);
+
         return data.items;
     });
 };

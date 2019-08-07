@@ -7,6 +7,8 @@ import Col from "react-bootstrap/Col";
 import { getIssueTimeline } from "./Issue/getIssueTimeline"
 import Row from "react-bootstrap/Row";
 import styles from './styles/card.module.css'
+import {addMessage} from "./action";
+import {connect} from "react-redux";
 
 /**
  * Represents Github issue card
@@ -42,9 +44,13 @@ class GithubCard extends Component
         let self = this;
         if (this.state.timelineExpanded === false) {
             if (this.state.timelineRecords.length === 0) { // Timeline records were not loaded previously
-                this.setState({ isLoading: true });
+                this.setState({isLoading: true});
+
                 getIssueTimeline(this.props.issue).then((timelineRecords) => {
-                    self.setState({ timelineRecords: timelineRecords, isLoading: false});
+                    self.setState({timelineRecords: timelineRecords, isLoading: false});
+                }).catch((error) => {
+                    this.props.addMessage(error.message);
+                    this.setState({isLoading: false});
                 });
             }
             self.setState({ timelineExpanded: true });
@@ -136,4 +142,9 @@ class GithubCard extends Component
     }
 }
 
-export default GithubCard
+
+const mapDispatchToProps = dispatch => ({
+    addMessage: message => dispatch(addMessage(message))
+});
+
+export default connect(null, mapDispatchToProps)(GithubCard);

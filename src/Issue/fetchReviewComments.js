@@ -14,7 +14,13 @@ export const fetchReviewComments = (issue, limit = 4) => {
     const reviewCommentsUrl = getReviewCommentsUrl(issue.pull_request.url);
 
     return fetch(reviewCommentsUrl, {method: 'GET'})
-        .then(response => response.json())
+        .then(response => {
+            if (response.status === 403) {
+                throw new Error("Too many requests, try again later");
+            }
+
+            return response.json()
+        })
         .then(comments => {
             comments.sort(
                 (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()

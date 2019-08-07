@@ -12,9 +12,14 @@ export const fetchCommits = (issue, limit = 4) => {
     }
 
     const commitsUrl = getCommitsUrl(issue.pull_request.url);
-
     return fetch(commitsUrl, {method: 'GET'})
-        .then(response => response.json())
+        .then(response => {
+            if (response.status === 403) {
+                throw new Error("Too many requests, try again later");
+            }
+
+            return response.json()
+        })
         .then(commits => {
             commits.sort(
                 (a, b) => new Date(b.commit.author.date).getTime() - new Date(a.commit.author.date).getTime()

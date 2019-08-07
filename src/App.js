@@ -2,15 +2,15 @@ import React, {Component} from 'react';
 import { fetchIssues } from './Issue/fetchIssues';
 import StorageProcessor from './Storage/StorageProcessor';
 import { Container } from 'react-bootstrap';
-import { Row } from 'react-bootstrap';
 import { Spinner } from "react-bootstrap";
 import { connect } from 'react-redux';
-import { setLoading, unsetLoading } from "./action";
+import { setLoading, unsetLoading, addMessage } from "./action";
 import GithubCard from "./GithubCard";
 import Navbar from "react-bootstrap/Navbar";
 import Filter from './Filter';
 import LoginForm from './LoginForm';
 import LogoutButton from './LogoutButton';
+import Messages from "./Messages";
 
 class App extends Component {
     state = {
@@ -57,7 +57,10 @@ class App extends Component {
             .then(issues => {
                 this.props.unsetLoading();
                 this.processIssues(issues);
-            });
+            }).catch((error) => {
+                this.props.addMessage(error.message);
+                this.props.unsetLoading();
+        });
     }
 
     processIssues(issues) {
@@ -82,6 +85,7 @@ class App extends Component {
 
         return (
             <Container>
+                <Messages/>
                 <Navbar>
                     { !this.getUsername() ? <LoginForm setUsername={this.setUsername}/> : null }
                     { this.getUsername() ? <Filter updateParent={this.getGithubIssues} username={this.getUsername()}/> : null }
@@ -102,7 +106,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     setLoading: () => dispatch(setLoading()),
-    unsetLoading: () => dispatch(unsetLoading())
+    unsetLoading: () => dispatch(unsetLoading()),
+    addMessage: message => dispatch(addMessage(message))
 });
 
 const AppContainer = connect(mapStateToProps, mapDispatchToProps)(App);
