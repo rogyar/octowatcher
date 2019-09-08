@@ -28,3 +28,19 @@
 .toggleTimelineButton {
     margin-top: 1rem;
 }
+
+.issueLabel {
+    display: inline-block;
+    padding: 0.1rem 0.3rem;
+    margin-right: 0.3rem;
+    margin-top: 0.5rem;
+    border-radius: 2px;
+    font-weight: 400;
+}
+
+.issueLabelText {
+    color: transparent;
+    background: inherit;
+    background-clip: text;
+    filter: invert(1) grayscale(1) contrast(9);
+}
