@@ -80,7 +80,6 @@ class GithubCard extends Component
 
     render() {
         let updatedIcon = this.state.updated === true ? '✅' : '☑️';
-
         this.assignUpdatedStatus(this.props.issue.updated);
         const timelineRecords = this.state.timelineRecords.map((item, key) =>
             <ul className={styles.timelineItem} key={key}>
@@ -98,6 +97,12 @@ class GithubCard extends Component
                 { item.label ? <li><b>Label: </b>{item.label}</li> : null }
                 { item.body ? <li className={styles.timelineItemBody}>{item.body}</li> : null }
             </ul>
+        );
+
+        const labels = this.props.issue.labels.map((label, key) =>
+            <span key={key} className={styles.issueLabel} style={{backgroundColor: '#' + label.color}}>
+                <span className={styles.issueLabelText}>{label.name}</span>
+            </span>
         );
 
         const assignees = this.props.issue.assignees.length > 0 ?
@@ -126,6 +131,7 @@ class GithubCard extends Component
                                 </ListGroup.Item>
                                 <ListGroup.Item><b>Assignees:</b> {assignees.join(', ')}</ListGroup.Item>
                                 <ListGroup.Item><a target="_blank" href={this.props.issue.html_url}>{this.props.issue.html_url}</a></ListGroup.Item>
+                                <ListGroup.Item>{labels}</ListGroup.Item>
                             </ListGroup>
                             <div>
                                 <Button className={styles.toggleTimelineButton} variant="dark" onClick={this.toggleTimeline}>Toggle timeline</Button>
