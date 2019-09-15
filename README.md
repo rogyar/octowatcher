@@ -1,68 +1,51 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Octowatcher 
 
-## Available Scripts
+[Website](https://octowatcher.me/)
 
-In the project directory, you can run:
+Octowatcher is a simple app for following Github issues and pull requests assigned to you. The main idea is to have 
+everything at hand without the necessity to open and review all issues for checking the status. The tool allows to 
+preload and review the issue/PR events such as comments, labels, reviews, etc inline. 
+By clicking on the "Updated" icon of an issue, the issue will be marked as "Updated" and this status will be preserved
+until a new update for the issue/PR occurs. So you can mark the issues you have already reviewed and easily see if there
+is any update for the issue. 
 
-### `npm start`
+## Usage
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+The tool is free, you can use either the hosted solution available at [http://octowatcher.me](http://octowatcher.me) 
+or you can install it on your own server. You don't need to register or perform the authorization process, simply put 
+your Github username and ring the bell. 
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+## On-premise installation 
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+-  Node >= 8.10 (for building the app)
 
-### `npm run build`
+### Installation
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Clone the repository
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+```bash
+$ git clone git@github.com:rogyar/octowatcher.git .
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Install app dependencies
 
-### `npm run eject`
+```bash
+$ npm install
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- Run the build process
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+$ npm run build
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Now you can run the application. If you prefer using a separate web-server such as Nginx, simply use the `build/` 
+directory of the application as the document root. 
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Project contribution 
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+Feel free to pick-up any of the existing [issues](https://github.com/rogyar/octowatcher/issues) (or create your own if 
+you found a bug or have some thoughts on how the functionality can be improved). Then we will be waiting for your 
+pull request.   
