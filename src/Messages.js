@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {connect} from "react-redux";
 import {clearMessages} from "./action";
 import Toast from "react-bootstrap/Toast";
+import styles from './styles/message.module.css';
 
 /**
  * Represents messages section
@@ -32,7 +33,7 @@ class Messages extends Component {
             </Toast>
         );
         return (
-                <div style={{ position: 'fixed', top: 0, right: 0, padding: "1rem 1rem"}}>
+                <div className={styles.message} style={{ position: 'fixed', top: 0, right: 0, padding: "1rem 1rem"}}>
                     {messages}
                 </div>
         );

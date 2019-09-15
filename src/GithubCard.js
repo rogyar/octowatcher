@@ -3,6 +3,7 @@ import StorageProcessor from './Storage/StorageProcessor'
 import {Card, Spinner} from 'react-bootstrap';
 import { ListGroup } from 'react-bootstrap';
 import { Button } from 'react-bootstrap';
+import Markdown from 'markdown-to-jsx';
 import Col from "react-bootstrap/Col";
 import { getIssueTimeline } from "./Issue/getIssueTimeline"
 import Row from "react-bootstrap/Row";
@@ -82,21 +83,32 @@ class GithubCard extends Component
         let updatedIcon = this.state.updated === true ? '✅' : '☑️';
         this.assignUpdatedStatus(this.props.issue.updated);
         const timelineRecords = this.state.timelineRecords.map((item, key) =>
-            <ul className={styles.timelineItem} key={key}>
-                <li><b>{item.type}</b></li>
-                <li>
-                    {new Intl.DateTimeFormat('en-GB', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: '2-digit'
-                    }).format(new Date(item.created_at))}
-                </li>
-                <li>
-                    <img className={styles.timelineAvatar} alt={item.author} src={item.avatar}/> <i>{item.author}</i></li>
-                { item.event ? <li><b>Event: </b>{item.event}</li> : null }
-                { item.label ? <li><b>Label: </b>{item.label}</li> : null }
-                { item.body ? <li className={styles.timelineItemBody}>{item.body}</li> : null }
-            </ul>
+            <Card className={styles.timelineItem}>
+                <Card.Header className={styles.eventHeader}>
+                    <Row>
+                        <Col>
+                            <img className={styles.timelineAvatar} alt={item.author} src={item.avatar}/> {item.author}
+                        </Col>
+                        <Col className={styles.eventDate}>
+                            {new Intl.DateTimeFormat('en-GB', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: '2-digit'
+                            }).format(new Date(item.created_at))}
+                        </Col>
+                    </Row>
+                </Card.Header>
+                <Card.Body>
+                    <ul key={key}>
+                        <li className={styles.eventType}>
+                            <b>{item.type}</b> { item.event ? <b>({item.event})</b> : null }
+                        </li>
+
+                        { item.label ? <li className={styles.issueLabel}><span className={styles.issueLabelText}>{item.label}</span></li> : null }
+                        { item.body ? <li className={styles.timelineItemBody}><Markdown>{item.body}</Markdown></li> : null }
+                    </ul>
+                </Card.Body>
+            </Card>
         );
 
         const labels = this.props.issue.labels.map((label, key) =>
